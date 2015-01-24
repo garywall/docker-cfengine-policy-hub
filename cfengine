@@ -2,8 +2,18 @@
 
 set -o xtrace
 
+if [ -n "${MASTERFILES_GIT_URL}" -a -n "${MASTERFILES_GIT_BRANCH}" ]; then
+    git clone -b "${MASTERFILES_GIT_BRANCH}" "${MASTERFILES_GIT_URL}" /tmp/masterfiles && rsync -a /tmp/masterfiles/ /var/cfengine/masterfiles/
+fi
+
+sed -i "/services_autorun/ s/!any/any/" /var/cfengine/masterfiles/def.cf
+
 cf-key
-cf-agent -B ${HOSTNAME}
+cf-agent -B $(hostname --ip-address)
 cf-agent -KI
-pkill cf-serverd 
-/var/cfengine/bin/cf-serverd --no-fork --verbose
+
+pkill cf-serverd
+pkill cf-execd
+
+/var/cfengine/bin/cf-execd --no-fork ${CF_FLAGS} &
+exec /var/cfengine/bin/cf-serverd --no-fork ${CF_FLAGS}
