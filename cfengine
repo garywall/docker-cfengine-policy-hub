@@ -6,6 +6,22 @@ if [ -n "${MASTERFILES_GIT_URL}" -a -n "${MASTERFILES_GIT_BRANCH}" ]; then
     git clone -b "${MASTERFILES_GIT_BRANCH}" "${MASTERFILES_GIT_URL}" /tmp/masterfiles && rsync -a /tmp/masterfiles/ /var/cfengine/masterfiles/
 fi
 
+if [ -n "${DESIGNCENTER_GIT_URL}" -a -n "${DESIGNCENTER_GIT_BRANCH}" ]; then
+    git clone -b "${DESIGNCENTER_GIT_BRANCH}" "${DESIGNCENTER_GIT_URL}" /tmp/design-center
+    cd /tmp/design-center && make install DESTDIR=/var/cfengine/design-center
+    cat > /var/cfengine/design-center/lib/cf-sketch/config.json <<EOHIPPUS
+{
+ log: "STDERR",
+ log_level: 4,
+ constdata: "/var/cfengine/design-center/lib/cf-sketch/constdata.conf",
+ repolist: [ "/var/cfengine/masterfiles/sketches" ],
+ recognized_sources: [ "/var/cfengine/design-center/sketches" ],
+ runfile: { },
+}
+EOHIPPUS
+
+fi
+
 sed -i "/services_autorun/ s/!any/any/" /var/cfengine/masterfiles/def.cf
 
 cf-key

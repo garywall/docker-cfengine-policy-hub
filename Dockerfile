@@ -7,7 +7,7 @@ EXPOSE 22
 RUN ["apt-get", "update"]
 RUN ["apt-get", "dist-upgrade", "-y"]
 RUN ["apt-get", "install", "-y", "apt-utils"]
-RUN ["apt-get", "install", "-y", "curl", "procps", "perl-modules", "openssh-server", "vim-nox", "whois", "git"]
+RUN ["apt-get", "install", "-y", "curl", "procps", "perl-modules", "openssh-server", "vim-nox", "whois", "git", "make", "libterm-readline-gnu-perl"]
 RUN curl -s -L http://cfengine.com/pub/gpg.key | apt-key add -
 RUN echo "deb http://cfengine.com/pub/apt/packages stable main" > /etc/apt/sources.list.d/cfengine-community.list
 RUN ["apt-get", "update"]
